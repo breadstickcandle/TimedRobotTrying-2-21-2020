@@ -12,6 +12,7 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -39,6 +40,8 @@ public class Robot extends TimedRobot {
   private Joystick controller = new Joystick(0);
   //modifier class name = new class (port);
 
+  //create global variable, startTime so that all methods can use
+  private double startTime;
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
@@ -78,6 +81,9 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+
+    //time when autonomous mode starts
+    startTime = Timer.getFPGATimestamp();
   }
 
   /**
@@ -85,14 +91,29 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
-        break;
-      case kDefaultAuto:
-      default:
-        // Put default auto code here
-        break;
+
+/*  switch (m_autoSelected) {
+    case kCustomAuto:
+      //Put custom auto code here
+      break;
+    case kDefaultAuto:
+    default:
+      // Put default auto code here
+      break; */
+
+    //controlling motor controllers
+    //spin in circles (startTime = when autonomous mode begins))
+    if (startTime < 3){
+      leftMotor1.set(ControlMode.PercentOutput, 0.05);
+      leftMotor2.set(ControlMode.PercentOutput, 0.05);
+      rightMotor1.set(ControlMode.PercentOutput, 0.05);
+      rightMotor2.set(ControlMode.PercentOutput, 0.05);
+    }
+    else {
+      leftMotor1.set(ControlMode.PercentOutput, 0);
+      leftMotor2.set(ControlMode.PercentOutput, 0);
+      rightMotor1.set(ControlMode.PercentOutput, 0);
+      rightMotor2.set(ControlMode.PercentOutput, 0);
     }
   }
 
@@ -105,6 +126,7 @@ public class Robot extends TimedRobot {
     //repeatedly read the axis
     //for the y axis, up is negative
     //left stick Y axis controls speed; right stick X axis controls turn
+    //multiply by 0.6 and 0.3 for easier controlling
     double speed = -controller.getRawAxis(1)*0.6;
     double turn = controller.getRawAxis(4)*0.3;
 
