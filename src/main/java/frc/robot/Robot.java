@@ -7,12 +7,11 @@
 
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
-
-import edu.wpi.first.wpilibj.Joystick;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -24,24 +23,36 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * project.
  */
 public class Robot extends TimedRobot {
-  private static final String kDefaultAuto = "Default";
-  private static final String kCustomAuto = "My Auto";
+  private final String kDefaultAuto = "Default";
+  private final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
+  //CONSTANTS
+  private final int leftMotorFrontID = 1;
+  private final int leftMotorRearID = 2;
+  private final int rightMotorFrontID = 3;
+  private final int rightMotorRearID = 4;
+  private final int xboxControllerPort = 0;
+
+  //CONTROLLER OBJECTS
+  private final XboxController xboxController = new XboxController(xboxControllerPort);
+
   //MOTOR CONTROLLER OBJECTS
-  private VictorSPX leftMotor1 = new VictorSPX(1);
-  private VictorSPX leftMotor2 = new VictorSPX(2);
-  private VictorSPX rightMotor1 = new VictorSPX(3);
-  private VictorSPX rightMotor2 = new VictorSPX(4);
-  //modifier class name = new class(ID);
+  private final WPI_VictorSPX leftMotorFront = new WPI_VictorSPX(leftMotorFrontID);
+  private final WPI_VictorSPX leftMotorRear = new WPI_VictorSPX(leftMotorRearID);
+  private final WPI_VictorSPX rightMotorFront = new WPI_VictorSPX(rightMotorFrontID);
+  private final WPI_VictorSPX rightMotorRear = new WPI_VictorSPX(rightMotorRearID);
 
-  //CREATE JOYSTICK OBJECT
-  private Joystick controller = new Joystick(0);
-  //modifier class name = new class (port);
+  //MOTOR CONTROLLER GROUPS
+  private final SpeedControllerGroup leftSideMotors = new SpeedControllerGroup(leftMotorFront, leftMotorRear);
+  private final SpeedControllerGroup rightSideMotors = new SpeedControllerGroup(rightMotorFront, rightMotorRear);
 
-  //create global variable, startTime so that all methods can use
-  private double startTime;
+  //DIFFERENTIAL DRIVE - DRIVING
+  private final DifferentialDrive robotDrive = new DifferentialDrive(leftSideMotors, rightSideMotors);
+
+  //GLOBAL VARIABLE startTime? so that all methods can use
+  //private double startTime;
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
@@ -82,8 +93,6 @@ public class Robot extends TimedRobot {
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
 
-    //time when autonomous mode starts
-    startTime = Timer.getFPGATimestamp();
   }
 
   /**
@@ -103,48 +112,18 @@ public class Robot extends TimedRobot {
 
     //controlling motor controllers
     //spin in circles (startTime = when autonomous mode begins))
-    if (startTime < 3){
-      leftMotor1.set(ControlMode.PercentOutput, 0.05);
-      leftMotor2.set(ControlMode.PercentOutput, 0.05);
-      rightMotor1.set(ControlMode.PercentOutput, 0.05);
-      rightMotor2.set(ControlMode.PercentOutput, 0.05);
-    }
-    else {
-      leftMotor1.set(ControlMode.PercentOutput, 0);
-      leftMotor2.set(ControlMode.PercentOutput, 0);
-      rightMotor1.set(ControlMode.PercentOutput, 0);
-      rightMotor2.set(ControlMode.PercentOutput, 0);
-    }
-  }
 
   /**
    * This function is called periodically during operator control.
    */
+  }
+
   @Override
   public void teleopPeriodic() {
 
-    //repeatedly read the axis
-    //for the y axis, up is negative
-    //left stick Y axis controls speed; right stick X axis controls turn
-    //multiply by 0.6 and 0.3 for easier controlling
-    double speed = -controller.getRawAxis(1)*0.6;
-    double turn = controller.getRawAxis(4)*0.3;
+    robotDrive.arcadeDrive(xboxController.getRawAxis(1)*0.5, xboxController.getRawAxis(4)*0.5);
+  }
 
-    //e.g. when you turn left, right side increases speed and left side decreases
-    double leftPower = speed + turn;
-    double rightPower = speed - turn;
-
-    //set the speed for the motor controllers
-    leftMotor1.set(ControlMode.PercentOutput, leftPower);
-    leftMotor2.set(ControlMode.PercentOutput, leftPower);
-    rightMotor1.set(ControlMode.PercentOutput, -rightPower);
-    rightMotor2.set(ControlMode.PercentOutput, -rightPower);
-    
-    }
-
-  /**
-   * This function is called periodically during test mode.
-   */
   @Override
   public void testPeriodic() {
   }
