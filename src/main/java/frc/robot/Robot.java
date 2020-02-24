@@ -29,10 +29,10 @@ public class Robot extends TimedRobot {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   //CONSTANTS
-  private final int leftMotorFrontID = 1;
-  private final int leftMotorRearID = 2;
-  private final int rightMotorFrontID = 3;
-  private final int rightMotorRearID = 4;
+  private final int leftMotorFrontID = 3;
+  private final int leftMotorRearID = 4;
+  private final int rightMotorFrontID = 1;
+  private final int rightMotorRearID = 2;
   private final int xboxControllerPort = 0;
 
   //CONTROLLER OBJECTS
@@ -48,7 +48,7 @@ public class Robot extends TimedRobot {
   private final SpeedControllerGroup leftSideMotors = new SpeedControllerGroup(leftMotorFront, leftMotorRear);
   private final SpeedControllerGroup rightSideMotors = new SpeedControllerGroup(rightMotorFront, rightMotorRear);
 
-  //DIFFERENTIAL DRIVE - DRIVING
+  //MISCELLANEOUS
   private final DifferentialDrive robotDrive = new DifferentialDrive(leftSideMotors, rightSideMotors);
 
   //GLOBAL VARIABLE startTime? so that all methods can use
