@@ -8,6 +8,8 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
@@ -62,6 +64,7 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+    CameraServer.getInstance().startAutomaticCapture(0);
   }
 
   /**
@@ -121,7 +124,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    robotDrive.arcadeDrive(xboxController.getRawAxis(1)*0.5, xboxController.getRawAxis(4)*0.5);
+    robotDrive.arcadeDrive(Math.abs(xboxController.getRawAxis(1))*xboxController.getRawAxis(1),Math.abs(xboxController.getRawAxis(4))*xboxController.getRawAxis(4)*0.5);
   }
 
   @Override
