@@ -42,10 +42,12 @@ public class Robot extends TimedRobot {
   private final int intakeMotorID = 5;
   private final int xboxControllerPort = 0;
   private final int intakeButtonNumber = 5;
+  private final int intakeReverseNumber = 6;
 
   //CONTROLLER OBJECTS
   private final XboxController xboxController = new XboxController(xboxControllerPort);
   private final JoystickButton intakeButton = new JoystickButton(xboxController, intakeButtonNumber);
+  private final JoystickButton intakeReverse = new JoystickButton(xboxController, intakeReverseNumber);
 
   //MOTOR CONTROLLER OBJECTS
   private final WPI_VictorSPX leftMotorFront = new WPI_VictorSPX(leftMotorFrontID);
@@ -142,6 +144,9 @@ public class Robot extends TimedRobot {
     double intakeRun;
     if (intakeButton.get()){
       intakeRun = 0.2;
+    }
+    else if (intakeReverse.get()){
+      intakeRun = -0.2; 
     }
     else {
       intakeRun = 0;
