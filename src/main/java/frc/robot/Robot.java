@@ -8,14 +8,19 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -35,16 +40,21 @@ public class Robot extends TimedRobot {
   private final int leftMotorRearID = 4;
   private final int rightMotorFrontID = 1;
   private final int rightMotorRearID = 2;
+  private final int intakeMotorID = 0;
   private final int xboxControllerPort = 0;
+  private final int intakeButtonNumber = 5;
 
   //CONTROLLER OBJECTS
   private final XboxController xboxController = new XboxController(xboxControllerPort);
+  private final JoystickButton intakeButton = new JoystickButton(xboxController, intakeButtonNumber);
 
   //MOTOR CONTROLLER OBJECTS
   private final WPI_VictorSPX leftMotorFront = new WPI_VictorSPX(leftMotorFrontID);
   private final WPI_VictorSPX leftMotorRear = new WPI_VictorSPX(leftMotorRearID);
   private final WPI_VictorSPX rightMotorFront = new WPI_VictorSPX(rightMotorFrontID);
   private final WPI_VictorSPX rightMotorRear = new WPI_VictorSPX(rightMotorRearID);
+  private final SpeedController intakeMotor = new CANSparkMax(intakeMotorID, MotorType.kBrushless);
+
 
   //MOTOR CONTROLLER GROUPS
   private final SpeedControllerGroup leftSideMotors = new SpeedControllerGroup(leftMotorFront, leftMotorRear);
@@ -64,6 +74,8 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+
+    //CAMERA
     CameraServer.getInstance().startAutomaticCapture(0);
   }
 
@@ -124,7 +136,13 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
+    //DRIVE
     robotDrive.arcadeDrive(Math.abs(xboxController.getRawAxis(1))*xboxController.getRawAxis(1),Math.abs(xboxController.getRawAxis(4))*xboxController.getRawAxis(4)*0.5);
+
+    //INTAKE
+    if (intakeButton.get()){
+      intakeMotor.set(0.8);
+    }
   }
 
   @Override
