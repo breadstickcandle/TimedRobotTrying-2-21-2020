@@ -39,7 +39,7 @@ public class Robot extends TimedRobot {
   private final int leftMotorRearID = 4;
   private final int rightMotorFrontID = 1;
   private final int rightMotorRearID = 2;
-  private final int intakeMotorID = 0;
+  private final int intakeMotorID = 5;
   private final int xboxControllerPort = 0;
   private final int intakeButtonNumber = 5;
 
@@ -139,9 +139,14 @@ public class Robot extends TimedRobot {
     robotDrive.arcadeDrive(Math.abs(xboxController.getRawAxis(1))*xboxController.getRawAxis(1),Math.abs(xboxController.getRawAxis(4))*xboxController.getRawAxis(4)*0.5);
 
     //INTAKE
+    double intakeRun;
     if (intakeButton.get()){
-      intakeMotor.set(0.8);
+      intakeRun = 0.2;
     }
+    else {
+      intakeRun = 0;
+    }
+    intakeMotor.set(intakeRun);
   }
 
   @Override
