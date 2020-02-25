@@ -41,8 +41,8 @@ public class Robot extends TimedRobot {
   private final int rightMotorRearID = 2;
   private final int intakeMotorID = 5;
   private final int xboxControllerPort = 0;
-  private final int intakeButtonNumber = 5;
-  private final int intakeReverseNumber = 6;
+  private final int intakeButtonNumber = 6;
+  private final int intakeReverseNumber = 5;
 
   //CONTROLLER OBJECTS
   private final XboxController xboxController = new XboxController(xboxControllerPort);
