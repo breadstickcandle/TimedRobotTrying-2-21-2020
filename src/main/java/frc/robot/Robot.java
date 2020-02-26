@@ -17,10 +17,10 @@ import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -42,13 +42,11 @@ public class Robot extends TimedRobot {
   private final int rightMotorRearID = 2;
   private final int intakeMotorID = 5;
   private final int xboxControllerPort = 0;
-  private final int intakeButtonNumber = 6;
-  private final int intakeReverseNumber = 5;
 
   //CONTROLLER OBJECTS
   private final XboxController xboxController = new XboxController(xboxControllerPort);
-  private final JoystickButton intakeButton = new JoystickButton(xboxController, intakeButtonNumber);
-  private final JoystickButton intakeReverse = new JoystickButton(xboxController, intakeReverseNumber);
+  private final Hand intakeHand = Hand.kLeft;
+  private final Hand intakeReverseHand = Hand.kRight;
 
   //MOTOR CONTROLLER OBJECTS
   private final WPI_VictorSPX leftMotorFront = new WPI_VictorSPX(leftMotorFrontID);
@@ -151,22 +149,24 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
 
     //DRIVE
-    robotDrive.arcadeDrive(Math.abs(xboxController.getRawAxis(1))*xboxController.getRawAxis(1), 
-    Math.abs(xboxController.getRawAxis(4))*xboxController.getRawAxis(4)*0.5);
+    double driveYAxis;
+    double driveXAxis;
+    driveYAxis = xboxController.getY(Hand.kLeft);
+    driveXAxis = xboxController.getX(Hand.kRight);
+    robotDrive.arcadeDrive(Math.abs(driveYAxis)*driveYAxis, Math.abs(driveXAxis)*driveXAxis*0.5);
 
     //INTAKE
     double intakeRun;
-    if (intakeButton.get()){
+    if (xboxController.getBumper(intakeHand)) {
       intakeRun = 0.2;
     }
-    else if (intakeReverse.get()){
+    else if (xboxController.getBumper(intakeReverseHand)){
       intakeRun = -0.2; 
     }
     else {
       intakeRun = 0;
     }
     intakeMotor.set(intakeRun);
-    
   }
 
   @Override
