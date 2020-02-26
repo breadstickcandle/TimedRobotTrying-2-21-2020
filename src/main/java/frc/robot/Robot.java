@@ -12,6 +12,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -42,6 +43,8 @@ public class Robot extends TimedRobot {
   private final int rightMotorRearID = 2;
   private final int intakeMotorID = 5;
   private final int xboxControllerPort = 0;
+  private final int launcherMotorLeftID = 0;
+  private final int launcherMotorRightID = 1;
 
   //CONTROLLER OBJECTS
   private final XboxController xboxController = new XboxController(xboxControllerPort);
@@ -54,7 +57,8 @@ public class Robot extends TimedRobot {
   private final WPI_VictorSPX rightMotorFront = new WPI_VictorSPX(rightMotorFrontID);
   private final WPI_VictorSPX rightMotorRear = new WPI_VictorSPX(rightMotorRearID);
   private final SpeedController intakeMotor = new CANSparkMax(intakeMotorID, MotorType.kBrushless);
-
+  private final Spark launcherMotorLeft = new Spark(launcherMotorLeftID);
+  private final Spark launcherMotorRight = new Spark(launcherMotorRightID);
 
   //MOTOR CONTROLLER GROUPS
   private final SpeedControllerGroup leftSideMotors = new SpeedControllerGroup(leftMotorFront, leftMotorRear);
@@ -154,7 +158,7 @@ public class Robot extends TimedRobot {
     driveYAxis = xboxController.getY(Hand.kLeft);
     driveXAxis = xboxController.getX(Hand.kRight);
     robotDrive.arcadeDrive(Math.abs(driveYAxis)*driveYAxis, Math.abs(driveXAxis)*driveXAxis*0.5);
-
+  
     //INTAKE
     double intakeRun;
     if (xboxController.getBumper(intakeHand)) {
@@ -167,6 +171,17 @@ public class Robot extends TimedRobot {
       intakeRun = 0;
     }
     intakeMotor.set(intakeRun);
+
+    //LAUNCHER
+    if (xboxController.getXButton()){
+      launcherMotorLeft.set(0.8);
+      launcherMotorRight.set(-0.8);
+    }
+    else {
+      launcherMotorLeft.set(0);
+      launcherMotorRight.set(0);
+    }
+
   }
 
   @Override
