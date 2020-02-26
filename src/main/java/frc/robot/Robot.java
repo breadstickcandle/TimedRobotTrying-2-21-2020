@@ -15,6 +15,7 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -63,6 +64,7 @@ public class Robot extends TimedRobot {
 
   //MISCELLANEOUS
   private final DifferentialDrive robotDrive = new DifferentialDrive(leftSideMotors, rightSideMotors);
+  private final Timer timer = new Timer();
 
   //GLOBAL VARIABLE startTime? so that all methods can use
   //private double startTime;
@@ -109,6 +111,9 @@ public class Robot extends TimedRobot {
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
 
+    //AUTONOMOUS TIMER USE
+    timer.reset();
+    timer.start();
   }
 
   /**
@@ -116,6 +121,14 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
+
+    //MOVE FORWARD
+    if (timer.get() < 2.0) {
+      robotDrive.arcadeDrive(-0.5, 0);
+    }
+    else {
+      robotDrive.stopMotor();
+    }
 
 /*  switch (m_autoSelected) {
     case kCustomAuto:
@@ -138,7 +151,8 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
 
     //DRIVE
-    robotDrive.arcadeDrive(Math.abs(xboxController.getRawAxis(1))*xboxController.getRawAxis(1),Math.abs(xboxController.getRawAxis(4))*xboxController.getRawAxis(4)*0.5);
+    robotDrive.arcadeDrive(Math.abs(xboxController.getRawAxis(1))*xboxController.getRawAxis(1), 
+    Math.abs(xboxController.getRawAxis(4))*xboxController.getRawAxis(4)*0.5);
 
     //INTAKE
     double intakeRun;
@@ -152,6 +166,7 @@ public class Robot extends TimedRobot {
       intakeRun = 0;
     }
     intakeMotor.set(intakeRun);
+    
   }
 
   @Override
