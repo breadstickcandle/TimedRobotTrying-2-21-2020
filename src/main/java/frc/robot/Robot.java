@@ -126,7 +126,7 @@ public class Robot extends TimedRobot {
 
     //MOVE FORWARD
     if (timer.get() < 2.0) {
-      robotDrive.arcadeDrive(-0.5, 0);
+      robotDrive.arcadeDrive(0.5, 0);
     }
     else {
       robotDrive.stopMotor();
@@ -157,7 +157,7 @@ public class Robot extends TimedRobot {
     double driveXAxis;
     driveYAxis = xboxController.getY(Hand.kLeft);
     driveXAxis = xboxController.getX(Hand.kRight);
-    robotDrive.arcadeDrive(Math.abs(driveYAxis)*driveYAxis, Math.abs(driveXAxis)*driveXAxis*0.5);
+    robotDrive.arcadeDrive(-1*Math.abs(driveYAxis)*driveYAxis, Math.abs(driveXAxis)*driveXAxis*0.5);
   
     //INTAKE
     double intakeRun;
