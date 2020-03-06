@@ -69,6 +69,7 @@ public class Robot extends TimedRobot {
   //MISCELLANEOUS
   private final DifferentialDrive robotDrive = new DifferentialDrive(leftSideMotors, rightSideMotors);
   private final Timer timer = new Timer();
+  private int counterStopper = 0;
 
   //GLOBAL VARIABLE startTime? so that all methods can use
   //private double startTime;
@@ -177,13 +178,12 @@ public class Robot extends TimedRobot {
 
     //LAUNCHER
     if (xboxController.getXButton()){
-      launcherMotorLeft.set(0.8);
-      launcherMotorRight.set(-0.8);
-      
-      timer.reset();
-      timer.start();
+      launcherMotorLeft.set(1.0);
+      launcherMotorRight.set(-1.0);
+    //  ballStopMotor.set(0.2);
+      counterStopper++;
 
-      if (timer.get() > 1.0) {
+      if (counterStopper > 50) {
         ballStopMotor.set(0.2);
       }
     }
@@ -191,8 +191,8 @@ public class Robot extends TimedRobot {
       launcherMotorLeft.set(0);
       launcherMotorRight.set(0);
       ballStopMotor.set(0);
+      counterStopper = 0;
     }
-
   }
 
   @Override
