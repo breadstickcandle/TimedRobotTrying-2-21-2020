@@ -42,6 +42,7 @@ public class Robot extends TimedRobot {
   private final int rightMotorFrontID = 1;
   private final int rightMotorRearID = 2;
   private final int intakeMotorID = 5;
+  private final int ballStopMotorID = 6;
   private final int xboxControllerPort = 0;
   private final int launcherMotorLeftID = 0;
   private final int launcherMotorRightID = 1;
@@ -57,6 +58,7 @@ public class Robot extends TimedRobot {
   private final WPI_VictorSPX rightMotorFront = new WPI_VictorSPX(rightMotorFrontID);
   private final WPI_VictorSPX rightMotorRear = new WPI_VictorSPX(rightMotorRearID);
   private final SpeedController intakeMotor = new CANSparkMax(intakeMotorID, MotorType.kBrushless);
+  private final SpeedController ballStopMotor = new CANSparkMax(ballStopMotorID, MotorType.kBrushed);
   private final Spark launcherMotorLeft = new Spark(launcherMotorLeftID);
   private final Spark launcherMotorRight = new Spark(launcherMotorRightID);
 
@@ -172,14 +174,23 @@ public class Robot extends TimedRobot {
     }
     intakeMotor.set(intakeRun);
 
+
     //LAUNCHER
     if (xboxController.getXButton()){
       launcherMotorLeft.set(0.8);
       launcherMotorRight.set(-0.8);
+      
+      timer.reset();
+      timer.start();
+
+      if (timer.get() > 1.0) {
+        ballStopMotor.set(0.2);
+      }
     }
     else {
       launcherMotorLeft.set(0);
       launcherMotorRight.set(0);
+      ballStopMotor.set(0);
     }
 
   }
