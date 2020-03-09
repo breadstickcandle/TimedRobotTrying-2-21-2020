@@ -12,6 +12,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -41,7 +42,13 @@ public class Robot extends TimedRobot {
   private final int rightMotorFrontID = 1;
   private final int rightMotorRearID = 2;
   private final int intakeMotorID = 5;
+  private final int ballStopMotorID = 6;
   private final int xboxControllerPort = 0;
+  private final int launcherMotorLeftID = 0;
+  private final int launcherMotorRightID = 1;
+
+  //VARIABLES
+  private int direction = 1;
 
   //CONTROLLER OBJECTS
   private final XboxController xboxController = new XboxController(xboxControllerPort);
@@ -54,7 +61,9 @@ public class Robot extends TimedRobot {
   private final WPI_VictorSPX rightMotorFront = new WPI_VictorSPX(rightMotorFrontID);
   private final WPI_VictorSPX rightMotorRear = new WPI_VictorSPX(rightMotorRearID);
   private final SpeedController intakeMotor = new CANSparkMax(intakeMotorID, MotorType.kBrushless);
-
+  private final SpeedController ballStopMotor = new CANSparkMax(ballStopMotorID, MotorType.kBrushed);
+  private final Spark launcherMotorLeft = new Spark(launcherMotorLeftID);
+  private final Spark launcherMotorRight = new Spark(launcherMotorRightID);
 
   //MOTOR CONTROLLER GROUPS
   private final SpeedControllerGroup leftSideMotors = new SpeedControllerGroup(leftMotorFront, leftMotorRear);
@@ -63,6 +72,7 @@ public class Robot extends TimedRobot {
   //MISCELLANEOUS
   private final DifferentialDrive robotDrive = new DifferentialDrive(leftSideMotors, rightSideMotors);
   private final Timer timer = new Timer();
+  private int counterStopper = 0;
 
   //GLOBAL VARIABLE startTime? so that all methods can use
   //private double startTime;
@@ -78,6 +88,7 @@ public class Robot extends TimedRobot {
 
     //CAMERA
     CameraServer.getInstance().startAutomaticCapture(0);
+    CameraServer.getInstance().startAutomaticCapture(1);
   }
 
   /**
@@ -122,7 +133,7 @@ public class Robot extends TimedRobot {
 
     //MOVE FORWARD
     if (timer.get() < 2.0) {
-      robotDrive.arcadeDrive(-0.5, 0);
+      robotDrive.arcadeDrive(0.5, 0);
     }
     else {
       robotDrive.stopMotor();
@@ -149,16 +160,20 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
 
     //DRIVE
+    if(xboxController.getYButtonPressed()){
+      direction *= -1;
+    }
+
     double driveYAxis;
     double driveXAxis;
     driveYAxis = xboxController.getY(Hand.kLeft);
     driveXAxis = xboxController.getX(Hand.kRight);
-    robotDrive.arcadeDrive(Math.abs(driveYAxis)*driveYAxis, Math.abs(driveXAxis)*driveXAxis*0.5);
-
+    robotDrive.arcadeDrive(-1*Math.abs(driveYAxis)*driveYAxis*direction, Math.abs(driveXAxis)*driveXAxis);
+  
     //INTAKE
     double intakeRun;
     if (xboxController.getBumper(intakeHand)) {
-      intakeRun = 0.2;
+      intakeRun = 0.3;
     }
     else if (xboxController.getBumper(intakeReverseHand)){
       intakeRun = -0.2; 
@@ -167,6 +182,31 @@ public class Robot extends TimedRobot {
       intakeRun = 0;
     }
     intakeMotor.set(intakeRun);
+
+    //ROTATION
+    if (xboxController.getBButton()){
+      ballStopMotor.set(0.3);
+    }
+
+    //LAUNCHER
+    if (xboxController.getXButton()){
+      launcherMotorLeft.set(1.0);
+      launcherMotorRight.set(-1.0);
+    //  ballStopMotor.set(0.2);
+      counterStopper++;
+
+      if (counterStopper > 50) {
+        ballStopMotor.set(-1.0);
+      }
+    }
+    else {
+      launcherMotorLeft.set(0);
+      launcherMotorRight.set(0);
+      counterStopper = 0;
+    }
+    if (xboxController.getXButton()==false && xboxController.getBButton()==false){
+      ballStopMotor.set(0.0);
+    }
   }
 
   @Override
