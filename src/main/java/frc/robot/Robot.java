@@ -48,7 +48,7 @@ public class Robot extends TimedRobot {
   private final int launcherMotorRightID = 1;
 
   //VARIABLES
-  private int direction = 1;
+  private int direction = -1;
 
   //CONTROLLER OBJECTS
   private final XboxController xboxController = new XboxController(xboxControllerPort);
@@ -168,7 +168,7 @@ public class Robot extends TimedRobot {
     double driveXAxis;
     driveYAxis = xboxController.getY(Hand.kLeft);
     driveXAxis = xboxController.getX(Hand.kRight);
-    robotDrive.arcadeDrive(-1*Math.abs(driveYAxis)*driveYAxis*direction, Math.abs(driveXAxis)*driveXAxis);
+    robotDrive.arcadeDrive(Math.abs(driveYAxis)*driveYAxis*direction, Math.abs(driveXAxis)*driveXAxis);
   
     //INTAKE
     double intakeRun;
