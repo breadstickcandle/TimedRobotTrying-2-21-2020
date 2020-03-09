@@ -47,6 +47,9 @@ public class Robot extends TimedRobot {
   private final int launcherMotorLeftID = 0;
   private final int launcherMotorRightID = 1;
 
+  //VARIABLES
+  private int direction = 1;
+
   //CONTROLLER OBJECTS
   private final XboxController xboxController = new XboxController(xboxControllerPort);
   private final Hand intakeHand = Hand.kLeft;
@@ -85,6 +88,7 @@ public class Robot extends TimedRobot {
 
     //CAMERA
     CameraServer.getInstance().startAutomaticCapture(0);
+    CameraServer.getInstance().startAutomaticCapture(1);
   }
 
   /**
@@ -156,16 +160,20 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
 
     //DRIVE
+    if(xboxController.getYButtonPressed()){
+      direction *= -1;
+    }
+
     double driveYAxis;
     double driveXAxis;
     driveYAxis = xboxController.getY(Hand.kLeft);
     driveXAxis = xboxController.getX(Hand.kRight);
-    robotDrive.arcadeDrive(-1*Math.abs(driveYAxis)*driveYAxis, Math.abs(driveXAxis)*driveXAxis*0.5);
+    robotDrive.arcadeDrive(-1*Math.abs(driveYAxis)*driveYAxis*direction, Math.abs(driveXAxis)*driveXAxis);
   
     //INTAKE
     double intakeRun;
     if (xboxController.getBumper(intakeHand)) {
-      intakeRun = 0.2;
+      intakeRun = 0.3;
     }
     else if (xboxController.getBumper(intakeReverseHand)){
       intakeRun = -0.2; 
@@ -175,6 +183,10 @@ public class Robot extends TimedRobot {
     }
     intakeMotor.set(intakeRun);
 
+    //ROTATION
+    if (xboxController.getBButton()){
+      ballStopMotor.set(0.3);
+    }
 
     //LAUNCHER
     if (xboxController.getXButton()){
@@ -184,14 +196,16 @@ public class Robot extends TimedRobot {
       counterStopper++;
 
       if (counterStopper > 50) {
-        ballStopMotor.set(0.2);
+        ballStopMotor.set(-1.0);
       }
     }
     else {
       launcherMotorLeft.set(0);
       launcherMotorRight.set(0);
-      ballStopMotor.set(0);
       counterStopper = 0;
+    }
+    if (xboxController.getXButton()==false && xboxController.getBButton()==false){
+      ballStopMotor.set(0.0);
     }
   }
 
